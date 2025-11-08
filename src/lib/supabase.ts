@@ -72,3 +72,108 @@ export interface Favorite {
   created_at: string;
   product?: Product;
 }
+
+// Helper functions to fetch data from Supabase
+export async function getActivities(): Promise<Activity[]> {
+  const { data, error } = await supabase
+    .from(TABLES.ACTIVITY)
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching activities:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+export async function getCategories(): Promise<Category[]> {
+  const { data, error } = await supabase
+    .from(TABLES.CATEGORY)
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching categories:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+export async function getActivityTypes(): Promise<ActivityType[]> {
+  const { data, error } = await supabase
+    .from(TABLES.ACTIVITY_TYPE)
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (error) {
+    console.error('Error fetching activity types:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+export async function getAllProducts(): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from(TABLES.PRODUCT)
+    .select('*')
+    .eq('is_active', true)
+    .order('create_date', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching products:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+export async function getProductById(id: string): Promise<Product | null> {
+  const { data, error } = await supabase
+    .from(TABLES.PRODUCT)
+    .select('*')
+    .eq('id', id)
+    .single();
+
+  if (error) {
+    console.error('Error fetching product:', error);
+    return null;
+  }
+
+  return data;
+}
+
+export async function getFeaturedProducts(limit: number = 6): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from(TABLES.PRODUCT)
+    .select('*')
+    .eq('is_active', true)
+    .order('rating', { ascending: false, nullsFirst: false })
+    .limit(limit);
+
+  if (error) {
+    console.error('Error fetching featured products:', error);
+    return [];
+  }
+
+  return data || [];
+}
+
+export async function getProductsByCategory(categoryId: string): Promise<Product[]> {
+  const { data, error } = await supabase
+    .from(TABLES.PRODUCT)
+    .select('*')
+    .eq('category_id', categoryId)
+    .eq('is_active', true)
+    .order('create_date', { ascending: false });
+
+  if (error) {
+    console.error('Error fetching products by category:', error);
+    return [];
+  }
+
+  return data || [];
+}

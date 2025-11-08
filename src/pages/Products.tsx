@@ -8,8 +8,7 @@ import { Slider } from '../components/ui/slider';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from '../components/ui/sheet';
 import { Search, Star, Heart, ShoppingCart, Filter, SlidersHorizontal } from 'lucide-react';
-import { Product, Activity, Category, ActivityType } from '../lib/supabase';
-import { getActivitiesMock, getCategoriesMock, getActivityTypesMock, getAllProductsMock } from '../lib/mockData';
+import { Product, Activity, Category, ActivityType, getActivities, getCategories, getActivityTypes, getAllProducts } from '../lib/supabase';
 import { formatPriceTL, getCategoryFallbackImage } from '../lib/utils';
 import { useCart } from '../contexts/CartContext';
 import { useFavorites } from '../contexts/FavoriteContext';
@@ -22,10 +21,10 @@ export default function Products() {
   const [activityTypes, setActivityTypes] = useState<ActivityType[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || '');
-  const [selectedActivity, setSelectedActivity] = useState(searchParams.get('activity') || '');
-  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || '');
-  const [selectedType, setSelectedType] = useState(searchParams.get('type') || '');
-  const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || '');
+  const [selectedActivity, setSelectedActivity] = useState(searchParams.get('activity') || 'all');
+  const [selectedCategory, setSelectedCategory] = useState(searchParams.get('category') || 'all');
+  const [selectedType, setSelectedType] = useState(searchParams.get('type') || 'all');
+  const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || 'all');
   const [priceRange, setPriceRange] = useState([0, 1000]);
   const [sortBy, setSortBy] = useState('newest');
   const [cities, setCities] = useState<string[]>([]);
@@ -42,16 +41,17 @@ export default function Products() {
 
   const loadFilters = async () => {
     try {
-      const activitiesData = getActivitiesMock();
+      const activitiesData = await getActivities();
       setActivities(activitiesData);
 
-      const categoriesData = getCategoriesMock();
+      const categoriesData = await getCategories();
       setCategories(categoriesData);
 
-      const typesData = getActivityTypesMock();
+      const typesData = await getActivityTypes();
       setActivityTypes(typesData);
 
-      const citiesData = getAllProductsMock().map((p) => p.city).filter(Boolean) as string[];
+      const allProducts = await getAllProducts();
+      const citiesData = allProducts.map((p) => p.city).filter(Boolean) as string[];
       const uniqueCities = [...new Set(citiesData)];
       setCities(uniqueCities as string[]);
     } catch (error) {
@@ -62,7 +62,7 @@ export default function Products() {
   const loadProducts = async () => {
     setLoading(true);
     try {
-      let data = getAllProductsMock().filter((p) => p.is_active);
+      let data = await getAllProducts();
 
       if (searchQuery) {
         const s = searchQuery.toLowerCase();
@@ -70,21 +70,21 @@ export default function Products() {
           [p.title, p.description, p.sub_title].filter(Boolean).some((t) => String(t).toLowerCase().includes(s))
         );
       }
-      if (selectedActivity) {
-        const typeIds = getActivityTypesMock()
+      if (selectedActivity !== 'all') {
+        const typeIds = activityTypes
           .filter((t) => t.activity_id === selectedActivity)
           .map((t) => t.id);
         if (typeIds.length) {
           data = data.filter((p) => typeIds.includes(p.activity_type_id));
         }
       }
-      if (selectedCategory) {
+      if (selectedCategory !== 'all') {
         data = data.filter((p) => p.category_id === selectedCategory);
       }
-      if (selectedType) {
+      if (selectedType !== 'all') {
         data = data.filter((p) => p.activity_type_id === selectedType);
       }
-      if (selectedCity) {
+      if (selectedCity !== 'all') {
         data = data.filter((p) => p.city === selectedCity);
       }
       data = data.filter((p) => p.price >= priceRange[0] && p.price <= priceRange[1]);
@@ -125,10 +125,10 @@ export default function Products() {
 
   const clearFilters = () => {
     setSearchQuery('');
-    setSelectedActivity('');
-    setSelectedCategory('');
-    setSelectedType('');
-    setSelectedCity('');
+    setSelectedActivity('all');
+    setSelectedCategory('all');
+    setSelectedType('all');
+    setSelectedCity('all');
     setPriceRange([0, 1000]);
     setSortBy('newest');
     setSearchParams({});
@@ -157,7 +157,7 @@ export default function Products() {
             <SelectValue placeholder="All themes" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All themes</SelectItem>
+            <SelectItem value="all">All themes</SelectItem>
             {activities.map((activity) => (
               <SelectItem key={activity.id} value={activity.id}>
                 {activity.activity_name}
@@ -174,7 +174,7 @@ export default function Products() {
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All categories</SelectItem>
+            <SelectItem value="all">All categories</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.category_name}
@@ -191,7 +191,7 @@ export default function Products() {
             <SelectValue placeholder="All types" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All types</SelectItem>
+            <SelectItem value="all">All types</SelectItem>
             {activityTypes.map((type) => (
               <SelectItem key={type.id} value={type.id}>
                 {type.activity_type_name}
@@ -208,7 +208,7 @@ export default function Products() {
             <SelectValue placeholder="All cities" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="">All cities</SelectItem>
+            <SelectItem value="all">All cities</SelectItem>
             {cities.map((city) => (
               <SelectItem key={city} value={city}>
                 {city}
@@ -314,8 +314,11 @@ export default function Products() {
                       <div className="relative">
                         <img
                           src={product.image_url || getCategoryFallbackImage(product.category_id)}
-                          alt={product.title}
+                          alt={product.title || 'Product image'}
                           className="w-full h-64 object-cover rounded-t-lg"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = getCategoryFallbackImage(product.category_id);
+                          }}
                         />
                         <Button
                           variant="ghost"

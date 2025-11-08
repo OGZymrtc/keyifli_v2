@@ -5,8 +5,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '../components/ui/seperator';
 import { Star, Heart, ShoppingCart, MapPin, Calendar, Ticket, ArrowLeft } from 'lucide-react';
-import { Product } from '@/lib/supabase';
-import { getAllProductsMock } from '@/lib/mockData';
+import { Product, getProductById, getProductsByCategory } from '@/lib/supabase';
 import { formatPriceTL, getCategoryFallbackImage } from '@/lib/utils';
 import { useCart } from '@/contexts/CartContext';
 import { useFavorites } from '../contexts/FavoriteContext';
@@ -32,14 +31,11 @@ export default function ProductDetail() {
 
     setLoading(true);
     try {
-      const all = getAllProductsMock();
-      const found = all.find((p) => p.id === id) || null;
+      const found = await getProductById(id);
       setProduct(found);
       if (found?.category_id) {
-        const related = all
-          .filter((p) => p.category_id === found.category_id && p.id !== found.id && p.is_active)
-          .slice(0, 4);
-        setRelatedProducts(related);
+        const related = await getProductsByCategory(found.category_id);
+        setRelatedProducts(related.filter((p) => p.id !== found.id).slice(0, 4));
       }
     } catch (error) {
       console.error('Error loading product:', error);
@@ -220,7 +216,7 @@ export default function ProductDetail() {
                       <img
                         src={
                           relatedProduct.image_url ||
-                          'https://images.unsplash.com/photo-1533174072545-7a4b6ad7a6c3?w=400&h=300&fit=crop'
+                          getCategoryFallbackImage(relatedProduct.category_id)
                         }
                         alt={relatedProduct.title}
                         className="w-full h-48 object-cover rounded-t-lg"
@@ -231,7 +227,7 @@ export default function ProductDetail() {
                       {relatedProduct.city && (
                         <p className="text-sm text-gray-500 mb-2">📍 {relatedProduct.city}</p>
                       )}
-                      <p className="text-xl font-bold text-purple-600">${relatedProduct.price}</p>
+                      <p className="text-xl font-bold text-purple-600">{formatPriceTL(relatedProduct.price)}</p>
                     </CardContent>
                   </Card>
                 </Link>

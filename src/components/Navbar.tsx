@@ -82,7 +82,7 @@ export const Navbar: React.FC = () => {
     { name: 'Ana Sayfa', path: '/' },
     { name: 'Deneyimler', path: '/products' },
     { name: 'Kategoriler', path: '/categories' },
-    { name: 'Hediye Kartları', path: '/gift' },
+    { name: 'Aktivitem Var', path: '/gift' },
   ];
 
   return (
@@ -93,7 +93,7 @@ export const Navbar: React.FC = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center space-x-2">
               <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 bg-clip-text text-transparent drop-shadow">
-                KeyifliBox
+                KeyifliKutu
               </span>
             </Link>
 

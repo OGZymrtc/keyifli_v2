@@ -7,8 +7,7 @@ import { Input } from '../components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
 import { Search, Star, Heart, ShoppingCart, Gift, Volume2, VolumeX, Settings } from 'lucide-react';
-import { supabase, Activity, Product } from '../lib/supabase';
-import { getActivitiesMock, getFeaturedProductsMock } from '../lib/mockData';
+import { Activity, Product, getActivities, getFeaturedProducts } from '../lib/supabase';
 import { formatPriceTL, getCategoryFallbackImage } from '../lib/utils';
 import { useCart } from '../contexts/CartContext';
 import { useFavorites } from '../contexts/FavoriteContext';
@@ -61,19 +60,19 @@ export default function Home() {
 
   const loadActivities = async () => {
     try {
-      const data = getActivitiesMock().slice(0, 6);
-      setActivities(data);
+      const data = await getActivities();
+      setActivities(data.slice(0, 6));
     } catch (error) {
-      console.error('Error loading activities (mock):', error);
+      console.error('Error loading activities:', error);
     }
   };
 
   const loadFeaturedProducts = async () => {
     try {
-      const data = getFeaturedProductsMock(6);
+      const data = await getFeaturedProducts(6);
       setFeaturedProducts(data);
     } catch (error) {
-      console.error('Error loading featured products (mock):', error);
+      console.error('Error loading featured products:', error);
     }
   };
 

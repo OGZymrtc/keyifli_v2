@@ -144,7 +144,7 @@ export const RAW_DATA: unknown = [
             "FULL_ADDRESS": "https://share.google/jIKivVQjH3ElLgeHO",
             "DATE": "24/10/2025 19:30:00",
             "SUB_TITLE": "Takımını Kur, Replikleri Hatırla, Kahkahaya Hazır Ol!",
-            "DESCRIPTION": "Hazır mısınız? Kahkahanın ve rekabetin buluştuğu unutulmaz bir Quiz Night deneyimine davetlisiniz!\\n“Replikler” temalı bu özel gecede takım arkadaşlarınla birlikte hafızanı zorla, kahkahalarla yarış ve en eğlenceli anların sahibi ol!\\n🎬 Tema: Ünlü dizi ve film replikleri\\n🎯 Takımını kur, yerini kap\\n😂 Bilemesen de sorun değil… Salla gitsin!\\nUnutma: Bu oyunda sadece doğru cevaplar değil, takım ruhu ve yüksek enerji kazanır!",
+            "DESCRIPTION": "Hazır mısınız? Kahkahanın ve rekabetin buluştuğu unutulmaz bir Quiz Night deneyimine davetlisiniz!\\n'Replikler' temalı bu özel gecede takım arkadaşlarınla birlikte hafızanı zorla, kahkahalarla yarış ve en eğlenceli anların sahibi ol!\\n🎬 Tema: Ünlü dizi ve film replikleri\\n🎯 Takımını kur, yerini kap\\n😂 Bilemesen de sorun değil… Salla gitsin!\\nUnutma: Bu oyunda sadece doğru cevaplar değil, takım ruhu ve yüksek enerji kazanır!",
             "RATING": null,
             "IS_ACTIVE": true,
             "IMAGE_URL": "https://muzegazhane.istanbul/wp-content/uploads/2025/10/24_Ekim_Salla_Gitsin_Quiz_Night_Replikler-768x960.jpg",
@@ -163,14 +163,13 @@ export const RAW_DATA: unknown = [
             "FULL_ADDRESS": "https://share.google/jIKivVQjH3ElLgeHO",
             "DATE": "31/10/2025 19:00:00",
             "SUB_TITLE": "İçindeki çocuğu sahneye çıkar!",
-            "DESCRIPTION": "İçindeki çocuğu sahneye çıkar! 3 saat sürecek bu atölyede kendini oyunlara bırak, hayal gücünü keşfet ve kahkahayla dolu bir deneyim yaşa.\\n🎭 Rol al, keşfet, eğlen\\n🤝 Diğer katılımcılarla etkileşimde bulun\\n✨ Çocuksu neşeni yeniden davet et\\nNot: Sadece oyunlara “EVET!” de!",
+            "DESCRIPTION": "İçindeki çocuğu sahneye çıkar! 3 saat sürecek bu atölyede kendini oyunlara bırak, hayal gücünü keşfet ve kahkahayla dolu bir deneyim yaşa.\\n🎭 Rol al, keşfet, eğlen\\n🤝 Diğer katılımcılarla etkileşimde bulun\\n✨ Çocuksu neşeni yeniden davet et\\nNot: Sadece oyunlara 'EVET!'' de!",
             "RATING": null,
             "IS_ACTIVE": true,
-            "IMAGE_URL": "https://muzegazhane.istanbul/wp-content/uploads/2025/10/31_Ekim_Bu_Yastan_Sonra-768x960.jpg",
+            "IMAGE_URL": "/images/Games.jpg",
             "EXTERNAL_URL": "Radar Türkiye mobil uygulama üzerinden kaydınızı yapabilirsiniz, https://radarturkiye.com/event/bu-yastan-sonra-yetiskinlere-oyunlar/5WcYSTkGzYNlKnDa1O4cmQ",
             "CREATE_DATE": "21/10/2025"
           }
-          // ... truncated: remaining entries from the user's JSON should continue here ...
         ]
       },
       {
@@ -207,8 +206,26 @@ type RawProduct = {
   CREATE_DATE?: string | null;
 };
 
+interface RawActivity {
+  ID: number;
+  ACTIVITY_NAME: string;
+  CATEGORY?: RawCategory[];
+}
+
+interface RawCategory {
+  ID: number;
+  CATEGORY_NAME: string;
+  ACTIVITY_TYPE?: RawActivityType[];
+  PRODUCT?: RawProduct[];
+}
+
+interface RawActivityType {
+  ID: number;
+  ACTIVITY_TYPE_NAME: string;
+}
+
 export function getActivitiesMock(): Activity[] {
-  const arr = RAW_DATA as any[];
+  const arr = RAW_DATA as RawActivity[];
   return (arr || []).map((a) => ({
     id: String(a.ID),
     activity_name: a.ACTIVITY_NAME,
@@ -217,7 +234,7 @@ export function getActivitiesMock(): Activity[] {
 }
 
 export function getFeaturedProductsMock(limit = 6): Product[] {
-  const arr = (RAW_DATA as any[]) || [];
+  const arr = (RAW_DATA as RawActivity[]) || [];
   const products: Product[] = [];
   for (const activity of arr) {
     for (const category of activity.CATEGORY || []) {
@@ -250,7 +267,7 @@ export function getFeaturedProductsMock(limit = 6): Product[] {
 }
 
 export function getCategoriesMock(): Category[] {
-  const arr = (RAW_DATA as any[]) || [];
+  const arr = (RAW_DATA as RawActivity[]) || [];
   const categories: Category[] = [];
   for (const activity of arr) {
     for (const category of activity.CATEGORY || []) {
@@ -266,7 +283,7 @@ export function getCategoriesMock(): Category[] {
 }
 
 export function getActivityTypesMock(): ActivityType[] {
-  const arr = (RAW_DATA as any[]) || [];
+  const arr = (RAW_DATA as RawActivity[]) || [];
   const types: ActivityType[] = [];
   for (const activity of arr) {
     for (const category of activity.CATEGORY || []) {
@@ -285,8 +302,5 @@ export function getActivityTypesMock(): ActivityType[] {
 }
 
 export function getAllProductsMock(): Product[] {
-  // Reuse the featured flatten without limit
   return getFeaturedProductsMock(9999);
 }
-
-

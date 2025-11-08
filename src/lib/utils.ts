@@ -5,11 +5,13 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// Format prices in Turkish Lira, printing "Ücretsiz" for zero
-export function formatPriceTL(price: number): string {
-  if (!price || price === 0) return 'Ücretsiz';
-  return `${price.toLocaleString('tr-TR')} TL`;
-}
+export const formatPriceTL = (price?: number) => {
+  if (typeof price !== 'number') return 'Ücretsiz';
+  return new Intl.NumberFormat('tr-TR', {
+    style: 'currency',
+    currency: 'TRY',
+  }).format(price);
+};
 
 // Category-based fallback images for when a product image is missing
 const CATEGORY_FALLBACKS: Record<string, string> = {
