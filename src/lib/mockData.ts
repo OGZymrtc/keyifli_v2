@@ -1,8 +1,5 @@
-// Mock data and helpers to simulate Supabase responses locally
 import type { Activity, Product, Category, ActivityType } from './supabase';
 
-// The large nested JSON provided by the user. Keep keys as-is to reflect original source.
-// For brevity in maintainability, we type it as unknown and map to strongly-typed models below.
 export const RAW_DATA: unknown = [
   {
     "ID": 1,

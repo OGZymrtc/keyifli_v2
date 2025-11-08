@@ -9,6 +9,7 @@ import { Navbar } from './components/Navbar';
 import Home from './pages/Home';
 import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
+import AdminPanel from './pages/AdminPanel';
 import NotFound from './pages/NotFound';
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
                 <Route path="/" element={<Home />} />
                 <Route path="/products" element={<Products />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
+                <Route path="/admin" element={<AdminPanel />} />
                 <Route path="/categories" element={<Products />} />
                 <Route path="/gift" element={<Home />} />
                 <Route path="*" element={<NotFound />} />

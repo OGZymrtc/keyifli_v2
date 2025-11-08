@@ -6,7 +6,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
 import { Badge } from '../components/ui/badge';
-import { Search, Star, Heart, ShoppingCart, Gift, Volume2, VolumeX } from 'lucide-react';
+import { Search, Star, Heart, ShoppingCart, Gift, Volume2, VolumeX, Settings } from 'lucide-react';
 import { supabase, Activity, Product } from '../lib/supabase';
 import { getActivitiesMock, getFeaturedProductsMock } from '../lib/mockData';
 import { formatPriceTL, getCategoryFallbackImage } from '../lib/utils';
@@ -147,6 +147,16 @@ export default function Home() {
         >
           {isMuted ? <VolumeX className="h-6 w-6" /> : <Volume2 className="h-6 w-6" />}
         </button>
+
+        {/* 🔧 Admin Panel Button */}
+        <Link to="/admin">
+          <button
+            className="absolute bottom-6 left-6 z-20 bg-white/60 hover:bg-white/80 text-gray-900 rounded-full p-3 transition"
+            title="Admin Panel"
+          >
+            <Settings className="h-6 w-6" />
+          </button>
+        </Link>
       </section>
 
       {/* 🔍 Search Block */}

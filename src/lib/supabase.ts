@@ -1,18 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://hlctzdobcxpexuazknlz.supabase.co';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhsY3R6ZG9iY3hwZXh1YXprbmx6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIxODU3ODYsImV4cCI6MjA3Nzc2MTc4Nn0.qwxcUN3U_4zHPmbT3YMhn5A3TUnkTj0cFEmF6Uub2hk';
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://vrjzuhreibqsvoqzsank.supabase.co';
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZyanp1aHJlaWJxc3ZvcXpzYW5rIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjIzNjc4MjgsImV4cCI6MjA3Nzk0MzgyOH0.LPDybh2TuNrZihGkIYtcrELA24-Y9nXaD8atOPDqPnU';
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey);
 
-// Table names
+// Table names with new app_id
 export const TABLES = {
-  ACTIVITY: 'app_a077ac80a8_activity',
-  CATEGORY: 'app_a077ac80a8_category',
-  ACTIVITY_TYPE: 'app_a077ac80a8_activity_type',
-  PRODUCT: 'app_a077ac80a8_product',
-  CART: 'app_a077ac80a8_cart',
-  FAVORITES: 'app_a077ac80a8_favorites',
+  ACTIVITY: 'app_9b4a9adf9b_activity',
+  CATEGORY: 'app_9b4a9adf9b_category',
+  ACTIVITY_TYPE: 'app_9b4a9adf9b_activity_type',
+  PRODUCT: 'app_9b4a9adf9b_product',
+  CART: 'app_9b4a9adf9b_cart',
+  FAVORITES: 'app_9b4a9adf9b_favorites',
 };
 
 // Types
