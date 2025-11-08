@@ -61,6 +61,17 @@ export default function ProductDetail() {
     }
   };
 
+  // Check if external URL is valid
+  const isValidUrl = (url?: string) => {
+    if (!url) return false;
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -80,6 +91,8 @@ export default function ProductDetail() {
     );
   }
 
+  const hasValidExternalUrl = isValidUrl(product.external_url);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -98,7 +111,7 @@ export default function ProductDetail() {
             <img
               src={product.image_url || getCategoryFallbackImage(product.category_id)}
               alt={product.title}
-              className="w-full h-[560px] object-cover rounded-lg shadow-lg"
+              className="w-full h-auto max-h-[600px] object-contain rounded-lg shadow-lg bg-gray-100"
             />
             {product.rating && (
               <Badge className="absolute top-4 left-4 bg-white/90 text-gray-900">
@@ -165,39 +178,50 @@ export default function ProductDetail() {
               </div>
 
               <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">Adet</label>
-                  <div className="flex items-center gap-4">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    >
-                      -
-                    </Button>
-                    <span className="text-xl font-semibold w-12 text-center">{quantity}</span>
-                    <Button variant="outline" size="icon" onClick={() => setQuantity(quantity + 1)}>
-                      +
-                    </Button>
-                  </div>
-                </div>
+                {product.price > 0 && (
+                  <>
+                    <div>
+                      <label className="text-sm font-medium mb-2 block">Adet</label>
+                      <div className="flex items-center gap-4">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                        >
+                          -
+                        </Button>
+                        <span className="text-xl font-semibold w-12 text-center">{quantity}</span>
+                        <Button variant="outline" size="icon" onClick={() => setQuantity(quantity + 1)}>
+                          +
+                        </Button>
+                      </div>
+                    </div>
 
-                <div className="flex items-center justify-between text-lg font-semibold">
-                  <span>Toplam:</span>
-                  <span className="text-purple-600">{product.price === 0 ? 'Ücretsiz' : `${(product.price * quantity).toLocaleString('tr-TR')} TL`}</span>
-                </div>
+                    <div className="flex items-center justify-between text-lg font-semibold">
+                      <span>Toplam:</span>
+                      <span className="text-purple-600">{`${(product.price * quantity).toLocaleString('tr-TR')} TL`}</span>
+                    </div>
 
-                <Button className="w-full text-white bg-gradient-to-r from-amber-600 to-rose-500 hover:brightness-110" size="lg" onClick={handleAddToCart}>
-                  <ShoppingCart className="h-5 w-5 mr-2" />
-                  Sepete Ekle
-                </Button>
+                    <Button className="w-full text-white bg-gradient-to-r from-amber-600 to-rose-500 hover:brightness-110" size="lg" onClick={handleAddToCart}>
+                      <ShoppingCart className="h-5 w-5 mr-2" />
+                      Sepete Ekle
+                    </Button>
+                  </>
+                )}
 
                 {product.external_url && (
-                  <Button variant="outline" className="w-full" asChild>
-                    <a href={product.external_url} target="_blank" rel="noopener noreferrer">
-                      Resmi Siteyi Ziyaret Et
-                    </a>
-                  </Button>
+                  hasValidExternalUrl ? (
+                    <Button variant="outline" className="w-full" asChild>
+                      <a href={product.external_url} target="_blank" rel="noopener noreferrer">
+                        Resmi Siteyi Ziyaret Et
+                      </a>
+                    </Button>
+                  ) : (
+                    <div className="text-sm text-gray-600 p-3 bg-gray-50 rounded border">
+                      <p className="font-medium mb-1">Dış Bağlantı:</p>
+                      <p className="break-all">{product.external_url}</p>
+                    </div>
+                  )
                 )}
               </div>
             </div>
@@ -219,7 +243,7 @@ export default function ProductDetail() {
                           getCategoryFallbackImage(relatedProduct.category_id)
                         }
                         alt={relatedProduct.title}
-                        className="w-full h-48 object-cover rounded-t-lg"
+                        className="w-full h-48 object-contain rounded-t-lg bg-gray-100"
                       />
                     </CardHeader>
                     <CardContent className="pt-4">

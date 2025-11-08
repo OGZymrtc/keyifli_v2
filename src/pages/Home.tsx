@@ -248,7 +248,7 @@ export default function Home() {
                     <img
                       src={product.image_url || getCategoryFallbackImage(product.category_id)}
                       alt={product.title}
-                      className="w-full h-64 object-cover rounded-t-lg"
+                      className="w-full h-64 object-contain rounded-t-lg bg-gray-100"
                     />
                     <Button
                       variant="ghost"
@@ -277,14 +277,16 @@ export default function Home() {
                   <p className="text-2xl font-bold text-orange-600">{formatPriceTL(product.price)}</p>
                 </CardContent>
                 <CardFooter className="flex gap-2">
-                  <Button
-                    className="flex-1 text-white bg-gradient-to-r from-amber-600 to-rose-500 hover:brightness-110"
-                    onClick={() => addToCart(product.id)}
-                  >
-                    <ShoppingCart className="h-4 w-4 mr-2" />
-                    Sepete Ekle
-                  </Button>
-                  <Link to={`/product/${product.id}`} className="flex-1">
+                  {product.price > 0 && (
+                    <Button
+                      className="flex-1 text-white bg-gradient-to-r from-amber-600 to-rose-500 hover:brightness-110"
+                      onClick={() => addToCart(product.id)}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-2" />
+                      Sepete Ekle
+                    </Button>
+                  )}
+                  <Link to={`/product/${product.id}`} className={product.price > 0 ? "flex-1" : "w-full"}>
                     <Button variant="outline" className="w-full border-rose-300 text-rose-600 hover:bg-rose-50">
                       Detaylar
                     </Button>
@@ -341,7 +343,7 @@ export default function Home() {
             <a href="#" className="hover:text-orange-400 transition-colors">Instagram</a>
             <a href="#" className="hover:text-orange-400 transition-colors">Twitter</a>
           </div>
-          <p className="text-gray-500 text-sm">© 2025 KeyifliBox. Tüm hakları saklıdır.</p>
+          <p className="text-gray-500 text-sm">© 2025 KeyifliKutu. Tüm hakları saklıdır.</p>
         </div>
       </motion.footer>
     </div>

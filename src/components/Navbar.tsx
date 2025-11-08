@@ -22,17 +22,18 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
-import { ShoppingCart, Heart, User, Menu, X } from 'lucide-react';
+import { ShoppingCart, Heart, User, Menu, X, Trash2 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useCart } from '../contexts/CartContext';
 import { useFavorites } from '../contexts/FavoriteContext';
+import { formatPriceTL, getCategoryFallbackImage } from '../lib/utils';
 import { toast } from 'sonner';
 
 export const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const { user, signIn, signUp, signInWithGoogle, signOut } = useAuth();
   const { getCartCount, cartItems, removeFromCart, getCartTotal } = useCart();
-  const { favorites } = useFavorites();
+  const { favorites, removeFromFavorites } = useFavorites();
   const [authOpen, setAuthOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
   const [favoritesOpen, setFavoritesOpen] = useState(false);
@@ -136,13 +137,22 @@ export const Navbar: React.FC = () => {
                       favorites.map((fav) => (
                         <div key={fav.id} className="flex gap-4 border-b pb-4">
                           <img
-                            src={fav.product?.image_url || 'https://via.placeholder.com/100'}
+                            src={fav.product?.image_url || getCategoryFallbackImage(fav.product?.category_id)}
                             alt={fav.product?.title}
                             className="w-20 h-20 object-cover rounded"
                           />
                           <div className="flex-1">
                             <h4 className="font-semibold text-sm">{fav.product?.title}</h4>
-                            <p className="text-orange-600 font-bold">${fav.product?.price}</p>
+                            <p className="text-orange-600 font-bold">{formatPriceTL(fav.product?.price)}</p>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-500 hover:text-red-700 p-0 h-auto mt-1 flex items-center gap-1"
+                              onClick={() => removeFromFavorites(fav.product_id)}
+                            >
+                              <Trash2 className="h-3 w-3" />
+                              Kaldır
+                            </Button>
                           </div>
                         </div>
                       ))
@@ -176,7 +186,7 @@ export const Navbar: React.FC = () => {
                         {cartItems.map((item) => (
                           <div key={item.id} className="flex gap-4 border-b pb-4">
                             <img
-                              src={item.product?.image_url || 'https://via.placeholder.com/100'}
+                              src={item.product?.image_url || getCategoryFallbackImage(item.product?.category_id)}
                               alt={item.product?.title}
                               className="w-20 h-20 object-cover rounded"
                             />
@@ -184,7 +194,7 @@ export const Navbar: React.FC = () => {
                               <h4 className="font-semibold text-sm">{item.product?.title}</h4>
                             <p className="text-gray-600 text-sm">Adet: {item.quantity}</p>
                               <p className="text-orange-600 font-bold">
-                                ${((item.product?.price || 0) * item.quantity).toFixed(2)}
+                                {formatPriceTL((item.product?.price || 0) * item.quantity)}
                               </p>
                               <Button
                                 variant="ghost"
@@ -200,7 +210,7 @@ export const Navbar: React.FC = () => {
                         <div className="pt-4 border-t">
                           <div className="flex justify-between text-lg font-bold">
                             <span>Toplam:</span>
-                            <span className="text-orange-600">${getCartTotal().toFixed(2)}</span>
+                            <span className="text-orange-600">{formatPriceTL(getCartTotal())}</span>
                           </div>
                           <Button className="w-full mt-4 text-white bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 hover:brightness-110" onClick={() => toast.success('Ödeme yakında!')}>
                             Satın Al

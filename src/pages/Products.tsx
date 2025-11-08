@@ -219,7 +219,7 @@ export default function Products() {
       </div>
 
       <div>
-        <h3 className="font-semibold mb-3">Price Range</h3>
+        <h3 className="font-semibold mb-3">Fiyat Aralığı</h3>
         <Slider
           min={0}
           max={1000}
@@ -229,8 +229,8 @@ export default function Products() {
           className="mb-2"
         />
         <div className="flex justify-between text-sm text-gray-600">
-          <span>${priceRange[0]}</span>
-          <span>${priceRange[1]}</span>
+          <span>{priceRange[0]} TL</span>
+          <span>{priceRange[1]} TL</span>
         </div>
       </div>
 
@@ -315,7 +315,7 @@ export default function Products() {
                         <img
                           src={product.image_url || getCategoryFallbackImage(product.category_id)}
                           alt={product.title || 'Product image'}
-                          className="w-full h-64 object-cover rounded-t-lg"
+                          className="w-full h-64 object-contain rounded-t-lg bg-gray-100"
                           onError={(e) => {
                             (e.currentTarget as HTMLImageElement).src = getCategoryFallbackImage(product.category_id);
                           }}
@@ -347,11 +347,13 @@ export default function Products() {
                       <p className="text-2xl font-bold text-purple-600">{formatPriceTL(product.price)}</p>
                     </CardContent>
                     <CardFooter className="flex gap-2">
-                      <Button className="flex-1" onClick={() => addToCart(product.id)}>
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        Add to Cart
-                      </Button>
-                      <Link to={`/product/${product.id}`} className="flex-1">
+                      {product.price > 0 && (
+                        <Button className="flex-1" onClick={() => addToCart(product.id)}>
+                          <ShoppingCart className="h-4 w-4 mr-2" />
+                          Add to Cart
+                        </Button>
+                      )}
+                      <Link to={`/product/${product.id}`} className={product.price > 0 ? "flex-1" : "w-full"}>
                         <Button variant="outline" className="w-full">
                           Details
                         </Button>
