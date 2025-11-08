@@ -170,7 +170,7 @@ export default function ProductDetail() {
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <p className="text-gray-600 text-sm mb-1">Kişi başı fiyat</p>
-                  <p className="text-4xl font-bold text-purple-600">{formatPriceTL(product.price)}</p>
+                  <p className="text-4xl font-bold text-orange-600">{formatPriceTL(product.price)}</p>
                 </div>
                 <Button variant="ghost" size="icon" onClick={handleToggleFavorite}>
                   <Heart className={`h-6 w-6 ${isFavorite(product.id) ? 'fill-red-500 text-red-500' : ''}`} />
@@ -199,7 +199,7 @@ export default function ProductDetail() {
 
                     <div className="flex items-center justify-between text-lg font-semibold">
                       <span>Toplam:</span>
-                      <span className="text-purple-600">{`${(product.price * quantity).toLocaleString('tr-TR')} TL`}</span>
+                      <span className="text-orange-600">{`${(product.price * quantity).toLocaleString('tr-TR')} TL`}</span>
                     </div>
 
                     <Button className="w-full text-white bg-gradient-to-r from-amber-600 to-rose-500 hover:brightness-110" size="lg" onClick={handleAddToCart}>
@@ -251,7 +251,7 @@ export default function ProductDetail() {
                       {relatedProduct.city && (
                         <p className="text-sm text-gray-500 mb-2">📍 {relatedProduct.city}</p>
                       )}
-                      <p className="text-xl font-bold text-purple-600">{formatPriceTL(relatedProduct.price)}</p>
+                      <p className="text-xl font-bold text-orange-600">{formatPriceTL(relatedProduct.price)}</p>
                     </CardContent>
                   </Card>
                 </Link>

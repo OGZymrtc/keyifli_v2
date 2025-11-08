@@ -286,8 +286,8 @@ export default function Home() {
                       Sepete Ekle
                     </Button>
                   )}
-                  <Link to={`/product/${product.id}`} className={product.price > 0 ? "flex-1" : "w-full"}>
-                    <Button variant="outline" className="w-full border-rose-300 text-rose-600 hover:bg-rose-50">
+                  <Link to={`/product/${product.id}`} className={"flex gap-1"}>
+                    <Button variant="outline" className="w-full border-orange-300 text-orange-600 hover:bg-orange-50">
                       Detaylar
                     </Button>
                   </Link>

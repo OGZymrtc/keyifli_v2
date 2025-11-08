@@ -137,12 +137,12 @@ export default function Products() {
   const FilterPanel = () => (
     <div className="space-y-6">
       <div>
-        <h3 className="font-semibold mb-3">Search</h3>
+        <h3 className="font-semibold mb-3">Ara</h3>
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
           <Input
             type="text"
-            placeholder="Search experiences..."
+            placeholder="Deneyim Ara..."
             className="pl-10"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
@@ -151,13 +151,30 @@ export default function Products() {
       </div>
 
       <div>
-        <h3 className="font-semibold mb-3">Activity Theme</h3>
+        <h3 className="font-semibold mb-3">Şehir</h3>
+        <Select value={selectedCity} onValueChange={setSelectedCity}>
+          <SelectTrigger>
+            <SelectValue placeholder="All cities" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Bütün Şehirler</SelectItem>
+            {cities.map((city) => (
+              <SelectItem key={city} value={city}>
+                {city}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div>
+        <h3 className="font-semibold mb-3">Tema</h3>
         <Select value={selectedActivity} onValueChange={setSelectedActivity}>
           <SelectTrigger>
             <SelectValue placeholder="All themes" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All themes</SelectItem>
+            <SelectItem value="all">Bütün Temalar</SelectItem>
             {activities.map((activity) => (
               <SelectItem key={activity.id} value={activity.id}>
                 {activity.activity_name}
@@ -166,15 +183,15 @@ export default function Products() {
           </SelectContent>
         </Select>
       </div>
-
+      {/*  
       <div>
-        <h3 className="font-semibold mb-3">Category</h3>
+        <h3 className="font-semibold mb-3">Kategori</h3>
         <Select value={selectedCategory} onValueChange={setSelectedCategory}>
           <SelectTrigger>
             <SelectValue placeholder="All categories" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All categories</SelectItem>
+            <SelectItem value="all">Bütün Kategoriler</SelectItem>
             {categories.map((category) => (
               <SelectItem key={category.id} value={category.id}>
                 {category.category_name}
@@ -182,36 +199,19 @@ export default function Products() {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </div> */}
 
       <div>
-        <h3 className="font-semibold mb-3">Activity Type</h3>
+        <h3 className="font-semibold mb-3">Aktivite Türü</h3>
         <Select value={selectedType} onValueChange={setSelectedType}>
           <SelectTrigger>
             <SelectValue placeholder="All types" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="all">All types</SelectItem>
+            <SelectItem value="all">Bütün Aktivite Türleri</SelectItem>
             {activityTypes.map((type) => (
               <SelectItem key={type.id} value={type.id}>
                 {type.activity_type_name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div>
-        <h3 className="font-semibold mb-3">City</h3>
-        <Select value={selectedCity} onValueChange={setSelectedCity}>
-          <SelectTrigger>
-            <SelectValue placeholder="All cities" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All cities</SelectItem>
-            {cities.map((city) => (
-              <SelectItem key={city} value={city}>
-                {city}
               </SelectItem>
             ))}
           </SelectContent>
@@ -235,7 +235,7 @@ export default function Products() {
       </div>
 
       <Button variant="outline" className="w-full" onClick={clearFilters}>
-        Clear Filters
+        Filtreleri Temizle
       </Button>
     </div>
   );
@@ -246,8 +246,8 @@ export default function Products() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2">All Experiences</h1>
-            <p className="text-gray-600">{products.length} experiences found</p>
+            <h1 className="text-3xl font-bold mb-2">Bütün Deneyimler</h1>
+            <p className="text-gray-600">{products.length} Deneyim Bulundu</p>
           </div>
           <div className="flex gap-4">
             <Select value={sortBy} onValueChange={setSortBy}>
@@ -255,23 +255,23 @@ export default function Products() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="newest">Newest First</SelectItem>
-                <SelectItem value="price-asc">Price: Low to High</SelectItem>
-                <SelectItem value="price-desc">Price: High to Low</SelectItem>
-                <SelectItem value="rating">Highest Rated</SelectItem>
+                <SelectItem value="newest">En Son Eklenenler</SelectItem>
+                <SelectItem value="price-asc">Fiyat: Düşükten Yükseğe</SelectItem>
+                <SelectItem value="price-desc">Fiyat: Yüksekten Düşüğe</SelectItem>
+                <SelectItem value="rating">En Yüksek Puanlılar</SelectItem>
               </SelectContent>
             </Select>
             <Sheet>
               <SheetTrigger asChild>
                 <Button variant="outline" className="lg:hidden">
                   <SlidersHorizontal className="h-4 w-4 mr-2" />
-                  Filters
+                  Filtreler
                 </Button>
               </SheetTrigger>
               <SheetContent>
                 <SheetHeader>
-                  <SheetTitle>Filters</SheetTitle>
-                  <SheetDescription>Refine your search</SheetDescription>
+                  <SheetTitle>Filtreler</SheetTitle>
+                  <SheetDescription>Size En Uygun Deneyimleri Bulun</SheetDescription>
                 </SheetHeader>
                 <div className="mt-6">
                   <FilterPanel />
@@ -287,7 +287,7 @@ export default function Products() {
             <div className="sticky top-24 bg-white p-6 rounded-lg shadow">
               <h2 className="text-xl font-bold mb-6 flex items-center">
                 <Filter className="h-5 w-5 mr-2" />
-                Filters
+                Filtreler
               </h2>
               <FilterPanel />
             </div>
@@ -297,13 +297,13 @@ export default function Products() {
           <main className="flex-1">
             {loading ? (
               <div className="text-center py-12">
-                <p className="text-gray-500">Loading experiences...</p>
+                <p className="text-gray-500">Aktiviteler Yükleniyor...</p>
               </div>
             ) : products.length === 0 ? (
               <div className="text-center py-12">
-                <p className="text-gray-500 text-lg">No experiences found</p>
+                <p className="text-gray-500 text-lg">Herhangi Bir Aktivite Bulunamadı</p>
                 <Button variant="outline" className="mt-4" onClick={clearFilters}>
-                  Clear Filters
+                  Filtreleri Temizle
                 </Button>
               </div>
             ) : (
@@ -344,18 +344,18 @@ export default function Products() {
                         <CardDescription className="text-sm mb-2">{product.sub_title}</CardDescription>
                       )}
                       {product.city && <p className="text-sm text-gray-500 mb-2">📍 {product.city}</p>}
-                      <p className="text-2xl font-bold text-purple-600">{formatPriceTL(product.price)}</p>
+                      <p className="text-2xl font-bold text-orange-600">{formatPriceTL(product.price)}</p>
                     </CardContent>
                     <CardFooter className="flex gap-2">
                       {product.price > 0 && (
                         <Button className="flex-1" onClick={() => addToCart(product.id)}>
                           <ShoppingCart className="h-4 w-4 mr-2" />
-                          Add to Cart
+                          Sepete Ekle
                         </Button>
                       )}
                       <Link to={`/product/${product.id}`} className={product.price > 0 ? "flex-1" : "w-full"}>
-                        <Button variant="outline" className="w-full">
-                          Details
+                        <Button variant="outline" className="flex gap-1 border-orange-300 text-orange-600 hover:bg-orange-50">
+                          Detaylar
                         </Button>
                       </Link>
                     </CardFooter>
