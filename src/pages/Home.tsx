@@ -12,6 +12,7 @@ import { formatPriceTL, getCategoryFallbackImage } from '../lib/utils';
 import { useCart } from '../contexts/CartContext';
 import { useFavorites } from '../contexts/FavoriteContext';
 import HomepageVideo from '../assets/home-page-cinematic.mp4';
+import { StatCard } from './StatCard';
 
 export default function Home() {
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -195,40 +196,73 @@ export default function Home() {
       </motion.section>
 
       {/* 🟠 Categories Section */}
-      <motion.section
-        ref={categoriesAnim.ref}
-        initial={{ opacity: 0, y: 60 }}
-        animate={categoriesAnim.controls}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="py-16 px-4 bg-amber-50"
-      >
-        <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Kategoriye Göre Keşfet</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activities.map((activity) => (
-              <Link key={activity.id} to={`/products?activity=${activity.id}`}>
-                <Card className="hover:shadow-lg transition-shadow cursor-pointer h-full border-orange-100">
-                  <CardHeader>
-                    <CardTitle className="text-xl text-gray-900">{activity.activity_name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="h-48 bg-gradient-to-br from-orange-600 via-amber-500 to-yellow-400 rounded-lg flex items-center justify-center text-white text-4xl font-bold">
-                      {activity.activity_name.charAt(0)}
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <Link to="/products">
-              <Button size="lg" variant="outline" className="border-rose-300 text-rose-600 hover:bg-rose-50">
-                Tüm Kategorileri Gör
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </motion.section>
+    {/* 🟠 Categories Section */}
+<motion.section
+  className="about py-24"
+  style={{ backgroundColor: '#ffe5d9' }}
+>
+  <div className="container">
+    <div className="about-content grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+
+      {/* About Text */}
+      <div className="about-text space-y-6">
+        <h2 className="section-title text-3xl md:text-4xl font-bold text-center md:text-left">
+          Keyifli Kutu Farkı
+        </h2>
+        <p className="text-gray-600 text-lg leading-relaxed">
+          Her aktivite, özenle seçilmiş deneyimler ve unutulmaz anılarla dolu.
+          Premium kalite, güvenilir partnerler ve sınırsız seçeneklerle
+          sevdiklerinize en özel hediyeyi sunuyoruz.
+        </p>
+        <ul className="benefits-list list-none space-y-2 text-gray-700 font-medium">
+          <li>✨ 100+ Farklı Deneyim Seçeneği</li>
+          <li>🎁 Premium Ambalaj ve Sunum</li>
+          <li>🌟 Esnek Kullanım Tarihleri</li>
+          <li>💝 Eşsiz Bir Deneyim</li>
+        </ul>
+      </div>
+
+      {/* Stats Cards */}
+      <div className="about-stats grid grid-cols-1 sm:grid-cols-3 gap-6">
+        {[
+          { number: 50000, label: 'Mutlu Müşteri', suffix: 'K+' },
+          { number: 100, label: 'Deneyim Seçeneği', suffix: '+' },
+          { number: 4.9, label: 'Müşteri Puanı', suffix: '' },
+        ].map((stat, idx) => (
+          <StatCard key={idx} stat={stat} delay={idx * 0.2} />
+        ))}
+      </div>
+    </div>
+
+    {/* Features Grid */}
+    <div className="container mt-16">
+      <h2 className="section-title text-3xl md:text-4xl mb-12 text-center">
+        Kutunuzda Neler Var?
+      </h2>
+      <div className="features-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {[
+          { icon: '🧖‍♀️', title: 'Spa & Wellness', desc: 'Rahatlatıcı spa deneyimleri, masaj seansları ve wellness aktiviteleri' },
+          { icon: '✨', title: 'Lüks Deneyimler', desc: 'Premium araçlar, lüks akşam yemekleri ve daha fazlası' },
+          { icon: '🪂', title: 'Macera & Heyecan', desc: 'Paraşütle atlama, ekstrem sporlar ve adrenalin dolu aktiviteler' },
+        ].map((feature, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6, delay: idx * 0.2 }}
+            className="feature-card bg-off-white p-10 rounded-2xl text-center border-2 border-transparent hover:border-orange-500 hover:shadow-lg transition-transform"
+          >
+            <div className="feature-icon text-5xl mb-4">{feature.icon}</div>
+            <h3 className="text-orange-500 text-xl font-bold mb-2">{feature.title}</h3>
+            <p className="text-gray-600">{feature.desc}</p>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  </div>
+</motion.section>
+
 
       {/* 💎 Featured Experiences */}
       <motion.section
@@ -295,13 +329,6 @@ export default function Home() {
               </Card>
             ))}
           </div>
-          <div className="text-center mt-12">
-            <Link to="/products">
-              <Button size="lg" className="text-white px-12 bg-gradient-to-r from-orange-500 to-rose-500 hover:brightness-110">
-                Tüm Deneyimleri Gör
-              </Button>
-            </Link>
-          </div>
         </div>
       </motion.section>
 
@@ -319,33 +346,13 @@ export default function Home() {
           <p className="text-xl mb-8">
             Unutulmaz anıları hediye et. Doğum günleri, yıldönümleri ya da sadece mutlu etmek için.
           </p>
-          <Link to="/gift">
+          <Link to="/products">
             <Button size="lg" variant="secondary" className="bg-white text-orange-700 hover:bg-rose-50">
-              Hediye Kartlarını Keşfet
+              Tüm Deneyimleri Gör
             </Button>
           </Link>
         </div>
       </motion.section>
-
-      {/* ⚙️ Footer */}
-      <motion.footer
-        ref={footerAnim.ref}
-        initial={{ opacity: 0, y: 60 }}
-        animate={footerAnim.controls}
-        transition={{ duration: 0.8, ease: 'easeOut' }}
-        className="bg-gray-900 text-white py-12 px-4"
-      >
-        <div className="max-w-7xl mx-auto text-center">
-          <h3 className="text-2xl font-bold mb-4">KeyifliBox</h3>
-          <p className="text-gray-400 mb-6">Unutulmaz deneyimleri keşfet ve rezervasyon yap</p>
-          <div className="flex justify-center space-x-6 mb-6">
-            <a href="#" className="hover:text-orange-400 transition-colors">Facebook</a>
-            <a href="#" className="hover:text-orange-400 transition-colors">Instagram</a>
-            <a href="#" className="hover:text-orange-400 transition-colors">Twitter</a>
-          </div>
-          <p className="text-gray-500 text-sm">© 2025 KeyifliKutu. Tüm hakları saklıdır.</p>
-        </div>
-      </motion.footer>
     </div>
   );
 }

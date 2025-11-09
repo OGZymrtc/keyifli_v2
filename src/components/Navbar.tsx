@@ -81,8 +81,9 @@ export const Navbar: React.FC = () => {
 
   const navLinks = [
     { name: 'Ana Sayfa', path: '/' },
-    { name: 'Deneyimler', path: '/products' },
-    { name: 'Kategoriler', path: '/categories' },
+    { name: 'Tüm Deneyimler', path: '/products' },
+    { name: 'Partnerimiz Ol', path: '/beOurPartner' },
+    { name: 'Hakkımızda', path: '/aboutUs' },
     { name: 'Aktivitem Var', path: '/gift' },
   ];
 
@@ -192,7 +193,7 @@ export const Navbar: React.FC = () => {
                             />
                             <div className="flex-1">
                               <h4 className="font-semibold text-sm">{item.product?.title}</h4>
-                            <p className="text-gray-600 text-sm">Adet: {item.quantity}</p>
+                              <p className="text-gray-600 text-sm">Adet: {item.quantity}</p>
                               <p className="text-orange-600 font-bold">
                                 {formatPriceTL((item.product?.price || 0) * item.quantity)}
                               </p>

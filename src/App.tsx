@@ -11,6 +11,11 @@ import Products from './pages/Products';
 import ProductDetail from './pages/ProductDetail';
 import AdminPanel from './pages/AdminPanel';
 import NotFound from './pages/NotFound';
+import AboutUs from './pages/AboutUs';
+import BeOurPartner from './pages/BeOurPartner';
+import Helper from './pages/Helper';
+import { Footer } from './components/Footer';
+import Gdpr from './pages/Gdpr';
 
 const queryClient = new QueryClient();
 
@@ -28,10 +33,14 @@ const App = () => (
                 <Route path="/products" element={<Products />} />
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/admin" element={<AdminPanel />} />
-                <Route path="/categories" element={<Products />} />
+                <Route path="/beOurPartner" element={<BeOurPartner />} />
+                <Route path="/aboutUs" element={<AboutUs />} />
                 <Route path="/gift" element={<Home />} />
+                <Route path="/gdpr" element={<Gdpr />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
+              <Footer />
+              <Helper />
             </BrowserRouter>
           </FavoritesProvider>
         </CartProvider>
