@@ -68,9 +68,10 @@ export default function Home() {
     }
   };
 
+  // Updated: Load top 9 products by priority (highest first)
   const loadFeaturedProducts = async () => {
     try {
-      const data = await getFeaturedProducts(6);
+      const data = await getFeaturedProducts(9);
       setFeaturedProducts(data);
     } catch (error) {
       console.error('Error loading featured products:', error);
@@ -264,7 +265,7 @@ export default function Home() {
 </motion.section>
 
 
-      {/* 💎 Featured Experiences */}
+      {/* 💎 Featured Experiences - Now showing top 9 by priority */}
       <motion.section
         ref={featuredAnim.ref}
         initial={{ opacity: 0, y: 60 }}

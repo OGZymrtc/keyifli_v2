@@ -13,7 +13,7 @@ import { formatPriceTL, getCategoryFallbackImage } from '../lib/utils';
 import { useCart } from '../contexts/CartContext';
 import { useFavorites } from '../contexts/FavoriteContext';
 
-export default function Products() {
+export default function ProductList() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -26,7 +26,8 @@ export default function Products() {
   const [selectedType, setSelectedType] = useState(searchParams.get('type') || 'all');
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || 'all');
   const [priceRange, setPriceRange] = useState([0, 1000]);
-  const [sortBy, setSortBy] = useState('newest');
+  // Updated: Default sorting is now by priority (highest first)
+  const [sortBy, setSortBy] = useState('priority');
   const [cities, setCities] = useState<string[]>([]);
   const { addToCart } = useCart();
   const { addToFavorites, removeFromFavorites, isFavorite } = useFavorites();
@@ -89,7 +90,19 @@ export default function Products() {
       }
       data = data.filter((p) => p.price >= priceRange[0] && p.price <= priceRange[1]);
 
+      // Updated: Added priority sorting (default)
       switch (sortBy) {
+        case 'priority':
+          // Sort by priority DESC (highest priority first), then by newest
+          data = data.sort((a, b) => {
+            const priorityA = a.priority ?? 0;
+            const priorityB = b.priority ?? 0;
+            if (priorityB !== priorityA) {
+              return priorityB - priorityA;
+            }
+            return new Date(b.create_date).getTime() - new Date(a.create_date).getTime();
+          });
+          break;
         case 'price-asc':
           data = data.sort((a, b) => a.price - b.price);
           break;
@@ -100,7 +113,6 @@ export default function Products() {
           data = data.sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0));
           break;
         case 'newest':
-        default:
           data = data.sort(
             (a, b) => new Date(b.create_date).getTime() - new Date(a.create_date).getTime()
           );
@@ -130,7 +142,7 @@ export default function Products() {
     setSelectedType('all');
     setSelectedCity('all');
     setPriceRange([0, 1000]);
-    setSortBy('newest');
+    setSortBy('priority');
     setSearchParams({});
   };
 
@@ -183,23 +195,6 @@ export default function Products() {
           </SelectContent>
         </Select>
       </div>
-      {/*  
-      <div>
-        <h3 className="font-semibold mb-3">Kategori</h3>
-        <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-          <SelectTrigger>
-            <SelectValue placeholder="All categories" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Bütün Kategoriler</SelectItem>
-            {categories.map((category) => (
-              <SelectItem key={category.id} value={category.id}>
-                {category.category_name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div> */}
 
       <div>
         <h3 className="font-semibold mb-3">Aktivite Türü</h3>
@@ -255,6 +250,8 @@ export default function Products() {
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
+                {/* Updated: Added priority sorting option as default */}
+                <SelectItem value="priority">Öncelik Sırası</SelectItem>
                 <SelectItem value="newest">En Son Eklenenler</SelectItem>
                 <SelectItem value="price-asc">Fiyat: Düşükten Yükseğe</SelectItem>
                 <SelectItem value="price-desc">Fiyat: Yüksekten Düşüğe</SelectItem>

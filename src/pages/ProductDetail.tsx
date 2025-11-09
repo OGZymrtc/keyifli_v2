@@ -153,6 +153,17 @@ export default function ProductDetail() {
               </p>
             </div>
 
+            {/* Updated: Display full_address if available */}
+            {product.full_address && (
+              <div>
+                <h3 className="text-lg font-semibold mb-2 flex items-center">
+                  <MapPin className="h-5 w-5 mr-2" />
+                  Adres
+                </h3>
+                <p className="text-gray-600">{product.full_address}</p>
+              </div>
+            )}
+
             {product.ticket_rule && (
               <div>
                 <h3 className="text-lg font-semibold mb-2 flex items-center">

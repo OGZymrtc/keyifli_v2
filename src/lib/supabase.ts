@@ -54,6 +54,8 @@ export interface Product {
   rating?: number;
   is_active: boolean;
   create_date: string;
+  priority?: number;
+  full_address?: string;
 }
 
 export interface CartItem {
@@ -151,7 +153,7 @@ export async function getFeaturedProducts(limit: number = 6): Promise<Product[]>
     .from(TABLES.PRODUCT)
     .select('*')
     .eq('is_active', true)
-    .order('rating', { ascending: false, nullsFirst: false })
+    .order('priority', { ascending: false, nullsFirst: false })
     .limit(limit);
 
   if (error) {

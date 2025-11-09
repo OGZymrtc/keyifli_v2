@@ -22,7 +22,9 @@ interface ActivityTypeRow {
   activity_type_name: string;
 }
 
+// Updated: Added priority and full_address fields
 interface ProductRow {
+  id?: string; // Optional ID for update operations
   activity_type_id?: string;
   category_id: string;
   title: string;
@@ -37,10 +39,13 @@ interface ProductRow {
   date?: string;
   rating?: number;
   is_active?: boolean;
+  priority?: number; // New field: priority for sorting
+  full_address?: string; // New field: full address for events
 }
 
-// Generate Excel template for bulk upload
-export const generateTemplate = (type: 'activity' | 'category' | 'activity_type' | 'product') => {
+export const generateTemplate = async (
+  type: 'activity' | 'category' | 'activity_type' | 'product'
+) => {
   let sampleData: unknown[] = [];
 
   switch (type) {
@@ -50,36 +55,127 @@ export const generateTemplate = (type: 'activity' | 'category' | 'activity_type'
         { activity_name: 'Spor & Macera' },
       ];
       break;
-    case 'category':
-      sampleData = [
-        { activity_id: 'UUID-of-activity', category_name: 'Tema ve Macera Parkları' },
-      ];
+
+    case 'category': {
+      // Parent activity names
+      const { data: activities } = await supabase
+        .from(TABLES.ACTIVITY)
+        .select('id, activity_name');
+
+      sampleData = activities && activities.length > 0
+        ? activities.map(a => ({
+          activity_id: a.id,
+          activity_name: a.activity_name, // Parent name
+          category_name: 'Tema ve Macera Parkları',
+        }))
+        : [{ activity_id: 'UUID-of-activity', activity_name: 'Parent Activity', category_name: 'Tema ve Macera Parkları' }];
       break;
-    case 'activity_type':
-      sampleData = [
-        { activity_id: 'UUID-of-activity', category_id: 'UUID-of-category', activity_type_name: 'Tema Park' },
-      ];
+    }
+
+    case 'activity_type': {
+      // Parent activities and categories
+      const { data: categories } = await supabase
+        .from(TABLES.CATEGORY)
+        .select('id, category_name, activity_id');
+
+      // Fetch activity names for each category
+      const activityIds = [...new Set(categories?.map(c => c.activity_id))];
+      const { data: activities } = await supabase
+        .from(TABLES.ACTIVITY)
+        .select('id, activity_name')
+        .in('id', activityIds);
+
+      sampleData = categories?.map(c => {
+        const parentActivity = activities?.find(a => a.id === c.activity_id);
+        return {
+          activity_id: c.activity_id,
+          activity_name: parentActivity?.activity_name,
+          category_id: c.id,
+          category_name: c.category_name,
+          activity_type_name: 'Tema Park',
+        };
+      }) || [{ activity_id: 'UUID-of-activity', activity_name: 'Parent Activity', category_id: 'UUID-of-category', category_name: 'Parent Category', activity_type_name: 'Tema Park' }];
       break;
-    case 'product':
-      sampleData = [
-        {
-          activity_type_id: 'UUID-of-activity-type (optional)',
-          category_id: 'UUID-of-category',
-          title: 'Salla Gitsin Quiz Night',
-          sub_title: 'Takımını Kur, Replikleri Hatırla',
-          description: 'Kahkahanın ve rekabetin buluştuğu unutulmaz bir Quiz Night deneyimi',
-          price: 0,
-          image_url: 'https://example.com/image.jpg',
-          external_url: 'https://example.com',
-          city: 'Istanbul',
-          district: 'Kadıköy',
-          ticket_rule: 'Sınırlı kapasiteyle gerçekleşecek',
-          date: '24/10/2025 19:30:00',
-          rating: 4.5,
-          is_active: true,
-        },
-      ];
+    }
+
+    case 'product': {
+      const { data: products } = await supabase
+        .from(TABLES.PRODUCT)
+        .select('*')
+        .limit(100);
+
+      // Fetch parent activity types, categories, and activities
+      const activityTypeIds = [...new Set(products?.map(p => p.activity_type_id).filter(Boolean))];
+      const { data: activityTypes } = await supabase
+        .from(TABLES.ACTIVITY_TYPE)
+        .select('id, activity_type_name, category_id')
+        .in('id', activityTypeIds);
+
+      const categoryIds = [...new Set(activityTypes?.map(at => at.category_id).concat(products?.map(p => p.category_id)))];
+      const { data: categories } = await supabase
+        .from(TABLES.CATEGORY)
+        .select('id, category_name, activity_id')
+        .in('id', categoryIds);
+
+      const activityIds = [...new Set(categories?.map(c => c.activity_id))];
+      const { data: activities } = await supabase
+        .from(TABLES.ACTIVITY)
+        .select('id, activity_name')
+        .in('id', activityIds);
+
+      sampleData = products?.map(p => {
+        const parentActivityType = activityTypes?.find(at => at.id === p.activity_type_id);
+        const parentCategory = categories?.find(c => c.id === p.category_id);
+        const parentActivity = activities?.find(a => a.id === parentCategory?.activity_id);
+
+        return {
+          id: p.id,
+          activity_type_id: p.activity_type_id,
+          activity_type_name: parentActivityType?.activity_type_name,
+          category_id: p.category_id,
+          category_name: parentCategory?.category_name,
+          activity_id: parentActivity?.id,
+          activity_name: parentActivity?.activity_name,
+          title: p.title,
+          sub_title: p.sub_title || '',
+          description: p.description || '',
+          price: p.price,
+          image_url: p.image_url || '',
+          external_url: p.external_url || '',
+          city: p.city || '',
+          district: p.district || '',
+          ticket_rule: p.ticket_rule || '',
+          date: p.date || '',
+          rating: p.rating || '',
+          is_active: p.is_active,
+          priority: p.priority || 0,
+          full_address: p.full_address || '',
+        };
+      }) || [{
+        id: '',
+        activity_type_id: '',
+        activity_type_name: '',
+        category_id: '',
+        category_name: '',
+        activity_id: '',
+        activity_name: '',
+        title: 'Sample Product',
+        sub_title: '',
+        description: '',
+        price: 0,
+        image_url: '',
+        external_url: '',
+        city: '',
+        district: '',
+        ticket_rule: '',
+        date: '',
+        rating: '',
+        is_active: true,
+        priority: 0,
+        full_address: '',
+      }];
       break;
+    }
   }
 
   const ws = XLSX.utils.json_to_sheet(sampleData);
@@ -88,24 +184,52 @@ export const generateTemplate = (type: 'activity' | 'category' | 'activity_type'
   XLSX.writeFile(wb, `${type}_template.xlsx`);
 };
 
+
 // Parse Excel/CSV file
 export const parseFile = async (file: File): Promise<unknown[]> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
+
     reader.onload = (e) => {
       try {
-        const data = e.target?.result;
-        const workbook = XLSX.read(data, { type: 'binary' });
+        const result = e.target?.result;
+        if (!result) {
+          reject("Dosya okunamadı");
+          return;
+        }
+
+        // ✅ CSV dosyası UTF-8 değilse bile TextDecoder ile çöz
+        const bytes = new Uint8Array(result as ArrayBuffer);
+        const decoder = new TextDecoder("utf-8", { fatal: false });
+        const text = decoder.decode(bytes);
+
+        // ✅ Türkçe karakter dönüşümünü manuel olarak da düzelt
+        const fixedText = text
+          .replace(/Ã§/g, "ç")
+          .replace(/Ã‡/g, "Ç")
+          .replace(/Ã¶/g, "ö")
+          .replace(/Ã–/g, "Ö")
+          .replace(/Ã¼/g, "ü")
+          .replace(/Ãœ/g, "Ü")
+          .replace(/Ã½/g, "ı")
+          .replace(/ÃŸ/g, "ß")
+          .replace(/Ã°/g, "ğ")
+          .replace(/Ã /g, "Ğ")
+          .replace(/ÅŸ/g, "ş")
+          .replace(/Åž/g, "Ş");
+
+        const workbook = XLSX.read(fixedText, { type: "string" });
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
         const json = XLSX.utils.sheet_to_json(worksheet);
+
         resolve(json);
       } catch (error) {
         reject(error);
       }
     };
-    reader.onerror = reject;
-    reader.readAsBinaryString(file);
+
+    reader.readAsArrayBuffer(file);
   });
 };
 
@@ -199,7 +323,7 @@ export const bulkUploadActivityTypes = async (data: unknown[]): Promise<BulkUplo
   return result;
 };
 
-// Bulk upload products
+// Updated: Bulk upload products with insert/update logic based on ID presence
 export const bulkUploadProducts = async (data: unknown[]): Promise<BulkUploadResult> => {
   const result: BulkUploadResult = { success: 0, failed: 0, errors: [] };
 
@@ -212,7 +336,7 @@ export const bulkUploadProducts = async (data: unknown[]): Promise<BulkUploadRes
         continue;
       }
 
-      const { error } = await supabase.from(TABLES.PRODUCT).insert({
+      const productData = {
         activity_type_id: row.activity_type_id || null,
         category_id: row.category_id,
         title: row.title,
@@ -227,14 +351,33 @@ export const bulkUploadProducts = async (data: unknown[]): Promise<BulkUploadRes
         date: row.date || null,
         rating: row.rating ? parseFloat(String(row.rating)) : null,
         is_active: row.is_active !== false,
-      });
+        priority: row.priority ? parseInt(String(row.priority)) : null, // New field
+        full_address: row.full_address || null, // New field
+      };
 
-      if (error) throw error;
+      // Updated: Check if ID exists to determine insert vs update
+      if (row.id && row.id.trim() !== '') {
+        // Update existing record
+        const { error } = await supabase
+          .from(TABLES.PRODUCT)
+          .update(productData)
+          .eq('id', row.id);
+
+        if (error) throw error;
+      } else {
+        // Insert new record
+        const { error } = await supabase
+          .from(TABLES.PRODUCT)
+          .insert(productData);
+
+        if (error) throw error;
+      }
+
       result.success++;
     } catch (error) {
       const err = error as Error;
       result.failed++;
-      result.errors.push(`Error inserting ${row.title}: ${err.message}`);
+      result.errors.push(`Error processing ${row.title}: ${err.message}`);
     }
   }
 
