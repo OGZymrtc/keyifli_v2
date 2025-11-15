@@ -4,15 +4,13 @@ import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
 import { Search, Star, Heart, ShoppingCart, Gift, Volume2, VolumeX, Settings } from 'lucide-react';
 import { Activity, Product, getActivities, getFeaturedProducts } from '../lib/supabase';
-import { formatPriceTL, getCategoryFallbackImage } from '../lib/utils';
 import { useCart } from '../contexts/CartContext';
 import { useFavorites } from '../contexts/FavoriteContext';
 import HomepageVideo from '../assets/home-page-cinematic.mp4';
 import { StatCard } from './StatCard';
+import ProductCard from '@/components/ProductCard';
 
 export default function Home() {
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -38,7 +36,7 @@ export default function Home() {
       // 🔊 Kullanıcı etkileşimi olduğunda sesi aç
       const enableSound = () => {
         if (video.muted) {
-          video.muted = false;
+          video.muted = true;
           video.volume = 1.0;
           setIsMuted(false);
         }
@@ -277,57 +275,9 @@ export default function Home() {
           <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">Öne Çıkan Deneyimler</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {featuredProducts.map((product) => (
-              <Card key={product.id} className="hover:shadow-lg transition-shadow border-orange-100">
-                <CardHeader className="p-0">
-                  <div className="relative">
-                    <img
-                      src={product.image_url || getCategoryFallbackImage(product.category_id)}
-                      alt={product.title}
-                      className="w-full h-64 object-contain rounded-t-lg bg-gray-100"
-                    />
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="absolute top-2 right-2 bg-white/80 hover:bg-white"
-                      onClick={() => handleToggleFavorite(product.id)}
-                    >
-                      <Heart className={`h-5 w-5 ${isFavorite(product.id) ? 'fill-red-500 text-red-500' : ''}`} />
-                    </Button>
-                    {product.rating && (
-                      <Badge className="absolute bottom-2 left-2 bg-white/90 text-gray-900 border-orange-200">
-                        <Star className="h-3 w-3 fill-yellow-400 text-yellow-400 mr-1" />
-                        {product.rating}
-                      </Badge>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent className="pt-4">
-                  <CardTitle className="text-lg mb-2 text-gray-900">{product.title}</CardTitle>
-                  {product.sub_title && (
-                    <CardDescription className="text-sm mb-2">{product.sub_title}</CardDescription>
-                  )}
-                  {product.city && (
-                    <p className="text-sm text-gray-500 mb-2">📍 {product.city}</p>
-                  )}
-                  <p className="text-2xl font-bold text-orange-600">{formatPriceTL(product.price)}</p>
-                </CardContent>
-                <CardFooter className="flex gap-2">
-                  {product.price > 0 && (
-                    <Button
-                      className="flex-1 text-white bg-gradient-to-r from-amber-600 to-rose-500 hover:brightness-110"
-                      onClick={() => addToCart(product.id)}
-                    >
-                      <ShoppingCart className="h-4 w-4 mr-2" />
-                      Sepete Ekle
-                    </Button>
-                  )}
-                  <Link to={`/product/${product.id}`} className={"flex gap-1"}>
-                    <Button variant="outline" className="w-full border-orange-300 text-orange-600 hover:bg-orange-50">
-                      Detaylar
-                    </Button>
-                  </Link>
-                </CardFooter>
-              </Card>
+              <ProductCard
+                key={product.id}
+                product={product} />
             ))}
           </div>
         </div>

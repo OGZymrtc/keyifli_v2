@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
+import keyifliLogo from '../assets/logo.jpeg';
 import {
   Sheet,
   SheetContent,
@@ -84,7 +85,7 @@ export const Navbar: React.FC = () => {
     { name: 'Tüm Deneyimler', path: '/products' },
     { name: 'Partnerimiz Ol', path: '/beOurPartner' },
     { name: 'Hakkımızda', path: '/aboutUs' },
-    { name: 'Aktivitem Var', path: '/gift' },
+    {/*{ name: 'Aktivitem Var', path: '/gift' },*/ }
   ];
 
   return (
@@ -93,10 +94,11 @@ export const Navbar: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             {/* Logo */}
-            <Link to="/" className="flex items-center space-x-2">
-              <span className="text-2xl font-bold bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 bg-clip-text text-transparent drop-shadow">
-                KeyifliKutu
-              </span>
+            <Link to="/" className="flex items-center">
+              <img
+                src={keyifliLogo}
+                className="h-10 w-auto object-contain"
+              />
             </Link>
 
             {/* Desktop Navigation */}
@@ -110,14 +112,33 @@ export const Navbar: React.FC = () => {
                   {link.name}
                 </Link>
               ))}
+              <div className="relative">
+                <span className="text-gray-700 hover:text-orange-600 transition-colors font-medium cursor-pointer peer">
+                  Aktivitem Var
+                </span>
+                <div className="absolute left-1/2 transform -translate-x-1/2 top-full mt-2 w-96 p-4 bg-white border border-gray-200 rounded-lg shadow-lg text-gray-700 text-sm font-medium opacity-0 peer-hover:opacity-100 transition-opacity z-50">
+                  🌼 Keyifli’den Merhaba!<br /><br />
+                  Selaaam! ☀️<br />
+                  Şu anda sizlere yeni Keyifli aktiviteler ve etkinlikler sunmak için yoğun bir şekilde çalışıyoruz!<br />
+                  Bu süreçte sadece ücretsiz etkinlikleri paylaşıyoruz — ama yakında çok daha fazlası geliyor! 🎉<br /><br />
+                  💛 Instagram sayfamızı takip etmeyi ve<br />
+                  💬 bizi beklemeye devam etmeyi unutma!<br /><br />
+                  Çok yakında Türkiye’de herkesin çeşitli, uygun fiyatlı ve keyifli aktiviteler deneyimleyebileceği bir platformla karşınızda olacağız. 🇹🇷<br /><br />
+                  Hazır ol Türkiye! 🌈✨
+                </div>
+              </div>
+
             </div>
+
+
+
 
             {/* Right Side Icons */}
             <div className="flex items-center space-x-4">
               {/* Favorites */}
               <Sheet open={favoritesOpen} onOpenChange={setFavoritesOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="relative">
+                  <Button variant="ghost" size="icon" className="relative peer">
                     <Heart className="h-5 w-5" />
                     {favorites.length > 0 && (
                       <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-orange-500">
@@ -131,7 +152,7 @@ export const Navbar: React.FC = () => {
                     <SheetTitle>Favoriler</SheetTitle>
                     <SheetDescription>Kaydettiğin deneyimler</SheetDescription>
                   </SheetHeader>
-                  <div className="mt-6 space-y-4">
+                  <div className="mt-6 overflow-y-auto max-h-[calc(100vh-150px)] space-y-4 pr-2 pb-4">
                     {favorites.length === 0 ? (
                       <p className="text-center text-gray-500 py-8">Henüz favori yok</p>
                     ) : (
@@ -179,49 +200,53 @@ export const Navbar: React.FC = () => {
                     <SheetTitle>Sepet</SheetTitle>
                     <SheetDescription>Ürünlerini gözden geçir</SheetDescription>
                   </SheetHeader>
-                  <div className="mt-6 space-y-4">
+                  <div className="mt-6 max-h-[400px] overflow-y-auto space-y-4 pr-2">
                     {cartItems.length === 0 ? (
                       <p className="text-center text-gray-500 py-8">Sepetin boş</p>
                     ) : (
-                      <>
-                        {cartItems.map((item) => (
-                          <div key={item.id} className="flex gap-4 border-b pb-4">
-                            <img
-                              src={item.product?.image_url || getCategoryFallbackImage(item.product?.category_id)}
-                              alt={item.product?.title}
-                              className="w-20 h-20 object-cover rounded"
-                            />
-                            <div className="flex-1">
-                              <h4 className="font-semibold text-sm">{item.product?.title}</h4>
-                              <p className="text-gray-600 text-sm">Adet: {item.quantity}</p>
-                              <p className="text-orange-600 font-bold">
-                                {formatPriceTL((item.product?.price || 0) * item.quantity)}
-                              </p>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                className="text-red-500 hover:text-red-700 p-0 h-auto"
-                                onClick={() => removeFromCart(item.product_id)}
-                              >
-                                Kaldır
-                              </Button>
-                            </div>
+                      cartItems.map((item) => (
+                        <div key={item.id} className="flex gap-4 border-b pb-4">
+                          <img
+                            src={item.product?.image_url || getCategoryFallbackImage(item.product?.category_id)}
+                            alt={item.product?.title}
+                            className="w-20 h-20 object-cover rounded"
+                          />
+                          <div className="flex-1">
+                            <h4 className="font-semibold text-sm">{item.product?.title}</h4>
+                            <p className="text-gray-600 text-sm">Adet: {item.quantity}</p>
+                            <p className="text-orange-600 font-bold">
+                              {formatPriceTL((item.product?.price || 0) * item.quantity)}
+                            </p>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-500 hover:text-red-700 p-0 h-auto"
+                              onClick={() => removeFromCart(item.product_id)}
+                            >
+                              Kaldır
+                            </Button>
                           </div>
-                        ))}
-                        <div className="pt-4 border-t">
-                          <div className="flex justify-between text-lg font-bold">
-                            <span>Toplam:</span>
-                            <span className="text-orange-600">{formatPriceTL(getCartTotal())}</span>
-                          </div>
-                          <Button className="w-full mt-4 text-white bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 hover:brightness-110" onClick={() => toast.success('Ödeme yakında!')}>
-                            Satın Al
-                          </Button>
                         </div>
-                      </>
+                      ))
                     )}
                   </div>
+                  {cartItems.length > 0 && (
+                    <div className="pt-4 border-t">
+                      <div className="flex justify-between text-lg font-bold">
+                        <span>Toplam:</span>
+                        <span className="text-orange-600">{formatPriceTL(getCartTotal())}</span>
+                      </div>
+                      <Button
+                        className="w-full mt-4 text-white bg-gradient-to-r from-orange-600 via-amber-500 to-yellow-400 hover:brightness-110"
+                        onClick={() => toast.success('Ödeme yakında!')}
+                      >
+                        Satın Al
+                      </Button>
+                    </div>
+                  )}
                 </SheetContent>
               </Sheet>
+
 
               {/* Auth */}
               {user ? (

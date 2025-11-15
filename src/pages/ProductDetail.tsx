@@ -10,6 +10,7 @@ import { formatPriceTL, getCategoryFallbackImage } from '@/lib/utils';
 import { useCart } from '@/contexts/CartContext';
 import { useFavorites } from '../contexts/FavoriteContext';
 import { toast } from 'sonner';
+import ProductCard from '@/components/ProductCard';
 
 export default function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -25,6 +26,10 @@ export default function ProductDetail() {
       loadProduct();
     }
   }, [id]);
+
+   useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, []);
 
   const loadProduct = async () => {
     if (!id) return;
@@ -180,11 +185,11 @@ export default function ProductDetail() {
             <div className="bg-white p-6 rounded-lg shadow">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <p className="text-gray-600 text-sm mb-1">Kişi başı fiyat</p>
-                  <p className="text-4xl font-bold text-orange-600">{formatPriceTL(product.price)}</p>
+                  <p className="text-gray-600 text-sm mb-1">Fiyat</p>
+                  <p className="text-4xl font-bold text-orange-600 mt-5">{formatPriceTL(product.price)}</p>
                 </div>
                 <Button variant="ghost" size="icon" onClick={handleToggleFavorite}>
-                  <Heart className={`h-6 w-6 ${isFavorite(product.id) ? 'fill-red-500 text-red-500' : ''}`} />
+                  <Heart className={`h-6 w-6 ${isFavorite(product.id) ? 'fill-orange-500 text-red-500' : ''}`} />
                 </Button>
               </div>
 
@@ -229,7 +234,6 @@ export default function ProductDetail() {
                     </Button>
                   ) : (
                     <div className="text-sm text-gray-600 p-3 bg-gray-50 rounded border">
-                      <p className="font-medium mb-1">Dış Bağlantı:</p>
                       <p className="break-all">{product.external_url}</p>
                     </div>
                   )
@@ -246,25 +250,7 @@ export default function ProductDetail() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {relatedProducts.map((relatedProduct) => (
                 <Link key={relatedProduct.id} to={`/product/${relatedProduct.id}`}>
-                  <Card className="hover:shadow-lg transition-shadow h-full">
-                    <CardHeader className="p-0">
-                      <img
-                        src={
-                          relatedProduct.image_url ||
-                          getCategoryFallbackImage(relatedProduct.category_id)
-                        }
-                        alt={relatedProduct.title}
-                        className="w-full h-48 object-contain rounded-t-lg bg-gray-100"
-                      />
-                    </CardHeader>
-                    <CardContent className="pt-4">
-                      <CardTitle className="text-lg mb-2">{relatedProduct.title}</CardTitle>
-                      {relatedProduct.city && (
-                        <p className="text-sm text-gray-500 mb-2">📍 {relatedProduct.city}</p>
-                      )}
-                      <p className="text-xl font-bold text-orange-600">{formatPriceTL(relatedProduct.price)}</p>
-                    </CardContent>
-                  </Card>
+                  <ProductCard product={relatedProduct} />
                 </Link>
               ))}
             </div>

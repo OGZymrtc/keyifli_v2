@@ -12,6 +12,7 @@ import { Product, Activity, Category, ActivityType, getActivities, getCategories
 import { formatPriceTL, getCategoryFallbackImage } from '../lib/utils';
 import { useCart } from '../contexts/CartContext';
 import { useFavorites } from '../contexts/FavoriteContext';
+import ProductCard from "../components/ProductCard";
 
 export default function ProductList() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,7 +27,6 @@ export default function ProductList() {
   const [selectedType, setSelectedType] = useState(searchParams.get('type') || 'all');
   const [selectedCity, setSelectedCity] = useState(searchParams.get('city') || 'all');
   const [priceRange, setPriceRange] = useState([0, 1000]);
-  // Updated: Default sorting is now by priority (highest first)
   const [sortBy, setSortBy] = useState('priority');
   const [cities, setCities] = useState<string[]>([]);
   const { addToCart } = useCart();
@@ -196,7 +196,7 @@ export default function ProductList() {
         </Select>
       </div>
 
-      <div>
+      {/* <div>
         <h3 className="font-semibold mb-3">Aktivite Türü</h3>
         <Select value={selectedType} onValueChange={setSelectedType}>
           <SelectTrigger>
@@ -211,7 +211,7 @@ export default function ProductList() {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </div>*/}
 
       <div>
         <h3 className="font-semibold mb-3">Fiyat Aralığı</h3>
@@ -306,57 +306,7 @@ export default function ProductList() {
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {products.map((product) => (
-                  <Card key={product.id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader className="p-0">
-                      <div className="relative">
-                        <img
-                          src={product.image_url || getCategoryFallbackImage(product.category_id)}
-                          alt={product.title || 'Product image'}
-                          className="w-full h-64 object-contain rounded-t-lg bg-gray-100"
-                          onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).src = getCategoryFallbackImage(product.category_id);
-                          }}
-                        />
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="absolute top-2 right-2 bg-white/80 hover:bg-white"
-                          onClick={() => handleToggleFavorite(product.id)}
-                        >
-                          <Heart
-                            className={`h-5 w-5 ${isFavorite(product.id) ? 'fill-red-500 text-red-500' : ''}`}
-                          />
-                        </Button>
-                        {product.rating && (
-                          <Badge className="absolute bottom-2 left-2 bg-white/90 text-gray-900">
-                            <Star className="h-3 w-3 fill-yellow-400 text-yellow-400 mr-1" />
-                            {product.rating}
-                          </Badge>
-                        )}
-                      </div>
-                    </CardHeader>
-                    <CardContent className="pt-4">
-                      <CardTitle className="text-lg mb-2">{product.title}</CardTitle>
-                      {product.sub_title && (
-                        <CardDescription className="text-sm mb-2">{product.sub_title}</CardDescription>
-                      )}
-                      {product.city && <p className="text-sm text-gray-500 mb-2">📍 {product.city}</p>}
-                      <p className="text-2xl font-bold text-orange-600">{formatPriceTL(product.price)}</p>
-                    </CardContent>
-                    <CardFooter className="flex gap-2">
-                      {product.price > 0 && (
-                        <Button className="flex-1" onClick={() => addToCart(product.id)}>
-                          <ShoppingCart className="h-4 w-4 mr-2" />
-                          Sepete Ekle
-                        </Button>
-                      )}
-                      <Link to={`/product/${product.id}`} className={product.price > 0 ? "flex-1" : "w-full"}>
-                        <Button variant="outline" className="flex gap-1 border-orange-300 text-orange-600 hover:bg-orange-50">
-                          Detaylar
-                        </Button>
-                      </Link>
-                    </CardFooter>
-                  </Card>
+                  <ProductCard key={product.id} product={product} />
                 ))}
               </div>
             )}
